@@ -1,94 +1,63 @@
 
 const { ajouterAuStock } = require('./stockFunctions'); // Importer la fonction à tester
+const {getStock} = require('./stockFunctions');
+let StockInitial;
 
-test('Ajout de stock avec une quantité nulle', () => {
-    const stockInitial = {
-        name: "Produit A",
-        status: "En stock",
-        quantity: 10,
-        description: "...",
-        picture: "...",
-        price: 50,
-        category: "Catégorie A"
-    };
-    const stockModifie= ajouterAuStock( stockInitial.nom, 0);
-
-    expect(stockModifie).toEqual(stockInitial.quantity);
+beforeEach(async () => {
+    StockInitial = await getStock('Produit A');
 });
 
-test('Quantité de stock réel supérieure à la quantité ajoutée', () => {
-    const stockInitial = {
-        name: "Produit A",
-        status: "En stock",
-        quantity: 10,
-        description: "...",
-        image: "...",
-        price: 50,
-        category: "Catégorie A"
-    };
+test('Ajout de stock avec une quantité nulle', async () => {
+    const quantiteInitial = StockInitial.quantity;
+    const stockModifie = await ajouterAuStock(StockInitial.name, 0);
 
+    expect(stockModifie).toEqual(quantiteInitial);
+});
+test('Ajout de stock (valeur positive)', async () => {
     const quantiteAjoutee = 7;
+    const quantiteInitial = StockInitial.quantity;
+    const stockModifie = await ajouterAuStock(StockInitial.name, quantiteAjoutee);
 
-    const stockModifie = ajouterAuStock(stockInitial, quantiteAjoutee);
-
-    expect(stockModifie.stockReel).toBe(stockInitial.stockReel + quantiteAjoutee);
-
-    expect(stockModifie.stockReserve).toBe(stockInitial.stockReserve);
+    expect(stockModifie).toBe(quantiteInitial + quantiteAjoutee);
 });
 
-test('Quantité de stock réel inférieure à la quantité ajoutée', () => {
-    const stockInitial = {
-        name: "Produit A",
-        status: "En stock",
-        quantity: 10,
-        description: "...",
-        image: "...",
-        price: 50,
-        category: "Catégorie A"
-    };
 
-    const quantiteAjoutee = 15;
+test('Retrait de stock (valeur négative)', async () => {
+    const quantiteAjoutee = -7;
+    const quantiteInitial = StockInitial.quantity;
+    const stockModifie = await ajouterAuStock(StockInitial.name, quantiteAjoutee);
 
-    const stockModifie = ajouterAuStock(stockInitial, quantiteAjoutee);
-
-    expect(stockModifie.stockReel).toBe(stockInitial.stockReel + quantiteAjoutee);
-
-    expect(stockModifie.stockReserve).toBe(stockInitial.stockReserve);
-
-})
-
-test('Éviter les injections MongoDB lors de la saisie des nouvelles quantités', () => {
-    const stockInitial = {
-        name: "Produit A",
-        status: "En stock",
-        quantity: 10,
-        description: "...",
-        image: "...",
-        price: 50,
-        category: "Catégorie A"
-    };
-    const quantiteAjoutee = '15';
-
-    // On parse la
-    const stockModifie = ajouterAuStock(stockInitial, parseInt(quantiteAjoutee));
-
-    expect(stockModifie.stockReel).toBe(stockInitial.stockReel + parseInt(quantiteAjoutee));
-
-    expect(stockModifie.stockReserve).toBe(stockInitial.stockReserve);
+    expect(stockModifie).toEqual(quantiteInitial + quantiteAjoutee);
 });
 
-test('Quantité ajoutée non numérique génère une erreur', () => {
-    const stockInitial = {
-        produit: 'ABC',
-        stockReel: 10,
-        stockReserve: 5,
-        stockHistorique: []
-    };
-
+test('Empeche de saisir des caractères', async () => {
     const quantiteAjoutee = 'ABC';
 
     // Vérifiez qu'une erreur est générée lors de l'appel à la fonction avec une quantité non numérique
-    expect(() => {
-        ajouterAuStock(stockInitial, parseInt(quantiteAjoutee));
-    }).toThrow();
+    let error;
+    try {
+        await ajouterAuStock(StockInitial.name, parseInt(quantiteAjoutee));
+    } catch (err) {
+        error = err;
+    }
+
+    expect(error).toBeDefined();
 });
+
+
+test('Vérification de la protection contre les injections', async () => {
+    // Préparation du test
+    const quantiteAjoutee = "1'; db.product.deleteMany({}); db.product.insertOne({name: 'ProduitInjecte', quantity: 100}); db.product.find({name: 'ProduitInjecte'}).count(); //";
+
+    // Exécution de la méthode
+    let error;
+    try {
+        await ajouterAuStock(StockInitial.name, quantiteAjoutee);
+    } catch (err) {
+        error = err;
+    }
+
+    // Vérification de l'erreur
+    expect(error).toBeDefined();
+});
+
