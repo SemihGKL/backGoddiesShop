@@ -1,5 +1,5 @@
 
-const {ajouterAuStock,getStock} = require('../stockFunctions');
+const {ajouterAuStock,getStock} = require('../controllers/stockController');
 let StockInitial;
 beforeEach(async () => {
     StockInitial = await getStock('Produit A');

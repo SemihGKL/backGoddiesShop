@@ -1,5 +1,5 @@
-const dbConnect = require("./database/connection")
-const Products = require("./database/models/productModel")
+const dbConnect = require("../database/connection")
+const Products = require("../database/models/productModel")
 
 //Méthode pour récuperer le stock d'un produit
 async function getStock(nomProduit) {
