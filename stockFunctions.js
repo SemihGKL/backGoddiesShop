@@ -2,27 +2,32 @@
 const { MongoClient } = require('mongodb');
 
 // Méthode pour se connecter à MongoDB
-async function connectToMongoDB() {
-    const url = 'mongodb+srv://gokolsemih:4dCJJLHJBeTPcO1p@cluster0.jhfdk8e.mongodb.net/?retryWrites=true&w=majority';
-    const client = new MongoClient(url);
+// async function connectToMongoDB() {
+//     const url = 'mongodb+srv://gokolsemih:4dCJJLHJBeTPcO1p@cluster0.jhfdk8e.mongodb.net/?retryWrites=true&w=majority';
+//     const client = new MongoClient(url);
 
-    try {
-        await client.connect();
-        console.log('Connecté à MongoDB');
-        return client.db('Local_test');
-    } catch (error) {
-        console.error('Erreur de connexion à MongoDB', error);
-        throw error;
-    }
-}
+//     try {
+//         await client.connect();
+//         console.log('Connecté à MongoDB');
+//         return client.db('Local_test');
+//     } catch (error) {
+//         console.error('Erreur de connexion à MongoDB', error);
+//         throw error;
+//     }
+// }
+
+const dbConnect = require("./database/connection");
+const Products = require('./database/productModel');
+
+
 //Méthode pour récuperer le stock d'un produit
 async function getStock(nomProduit) {
     try {
-        const db = await connectToMongoDB();
-        const collection = db.collection('product');
+        const db = await dbConnect();
+        // const collection = db.collection('Products');
 
         const filter = { name: nomProduit };
-        const stock = await collection.findOne(filter);
+        const stock = await Products.findOne(filter);
 
         if (!stock) {
             throw new Error('Stock introuvable');
@@ -42,7 +47,7 @@ async function ajouterAuStock(nomProduit, quantiteAjoutee) {
             throw new Error('La quantité ajoutée doit être un nombre');
         }
         const db = await connectToMongoDB();
-        const collection = db.collection('product');
+        const collection = db.collection('Products');
 
         const filter = { name: { $eq: nomProduit } };
         const produitInitial = await collection.findOne(filter);
