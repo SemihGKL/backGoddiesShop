@@ -1,58 +1,59 @@
 
-const { ajouterAuStock } = require('../stockFunctions'); // Importer la fonction à tester
-const {getStock} = require('../stockFunctions');
+const {ajouterAuStock,getStock} = require('../controllers/stockController');
 let StockInitial;
-
 beforeEach(async () => {
     StockInitial = await getStock('Produit A');
 });
 
-test('Ajout de stock avec une quantité nulle', async () => {
-    const quantiteInitial = StockInitial.quantity;
-    const stockModifie = await ajouterAuStock(StockInitial.name, 0);
+describe('Tests pour modifier la quantité de stock', () => {
+    test('Ajout de stock avec une quantité réelle nulle', async () => {
+        const quantiteInitial = StockInitial.quantityReel;
+        const stockModifie = await ajouterAuStock(StockInitial.name, 0, true);
 
-    expect(stockModifie).toEqual(quantiteInitial);
+        expect(stockModifie).toEqual(quantiteInitial);
+    });
+
+    test('Ajout de stock RESERVE (valeur positive)', async () => {
+        const quantiteAjoutee = 7;
+        const quantiteInitial = StockInitial.quantityReserve;
+        const stockModifie = await ajouterAuStock(StockInitial.name, quantiteAjoutee, false);
+        console.log(StockInitial)
+        expect(stockModifie).toBe(quantiteInitial + quantiteAjoutee);
+    });
+
+    test('Ajout de stock REEL (valeur positive)', async () => {
+        const quantiteAjoutee = 7;
+        const quantiteInitial = StockInitial.quantityReel;
+        const stockModifie = await ajouterAuStock(StockInitial.name, quantiteAjoutee, true);
+
+        expect(stockModifie).toBe(quantiteInitial + quantiteAjoutee);
+    });
+
+    test('Retrait de stock RESERVE (valeur négative)', async () => {
+        const quantiteAjoutee = -7;
+        const quantiteInitial = StockInitial.quantityReserve;
+        const stockModifie = await ajouterAuStock(StockInitial.name, quantiteAjoutee, false);
+
+        expect(stockModifie).toEqual(quantiteInitial + quantiteAjoutee);
+    });
+
+    test('Retrait de stock REEL (valeur négative)', async () => {
+        const quantiteAjoutee = -7;
+        const quantiteInitial = StockInitial.quantityReel;
+        const stockModifie = await ajouterAuStock(StockInitial.name, quantiteAjoutee, true);
+
+        expect(stockModifie).toEqual(quantiteInitial + quantiteAjoutee);
+    });
+
+
 });
-test('Ajout de stock (valeur positive)', async () => {
-    const quantiteAjoutee = 7;
-    const quantiteInitial = StockInitial.quantity;
-    const stockModifie = await ajouterAuStock(StockInitial.name, quantiteAjoutee);
-
-    expect(stockModifie).toBe(quantiteInitial + quantiteAjoutee);
-});
-
-
-test('Retrait de stock (valeur négative)', async () => {
-    const quantiteAjoutee = -7;
-    const quantiteInitial = StockInitial.quantity;
-    const stockModifie = await ajouterAuStock(StockInitial.name, quantiteAjoutee);
-
-    expect(stockModifie).toEqual(quantiteInitial + quantiteAjoutee);
-});
-
-test('Empeche de saisir des caractères', async () => {
-    const quantiteAjoutee = 'ABC';
-
-    // Vérifiez qu'une erreur est générée lors de l'appel à la fonction avec une quantité non numérique
-    let error;
-    try {
-        await ajouterAuStock(StockInitial.name, parseInt(quantiteAjoutee));
-    } catch (err) {
-        error = err;
-    }
-
-    expect(error).toBeDefined();
-});
-
-
+describe('Tests avec valeur rejetée', () => {
 test('Vérification de la protection contre les injections', async () => {
-    // Préparation du test
     const quantiteAjoutee = "1'; db.product.deleteMany({}); db.product.insertOne({name: 'ProduitInjecte', quantity: 100}); db.product.find({name: 'ProduitInjecte'}).count(); //";
 
-    // Exécution de la méthode
     let error;
     try {
-        await ajouterAuStock(StockInitial.name, quantiteAjoutee);
+        await ajouterAuStock(StockInitial.name, quantiteAjoutee, true);
     } catch (err) {
         error = err;
     }
@@ -60,4 +61,20 @@ test('Vérification de la protection contre les injections', async () => {
     // Vérification de l'erreur
     expect(error).toBeDefined();
 });
+
+test('Empêche de saisir des caractères', async () => {
+    const quantiteAjoutee = 'ABC';
+
+    // Vérifiez qu'une erreur est générée lors de l'appel à la fonction avec une quantité non numérique
+    let error;
+    try {
+        await ajouterAuStock(StockInitial.name, quantiteAjoutee, true);
+    } catch (err) {
+        error = err;
+    }
+
+    expect(error).toBeDefined();
+});
+});
+
 

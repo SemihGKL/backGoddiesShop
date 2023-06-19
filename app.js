@@ -51,7 +51,7 @@ app.get('/products', async (req, res) => {
         console.error('Erreur lors de la récupération des produits :', error);
         res.status(500).json({ error: 'Erreur lors de la récupération des produits' });
     }
-});
+});  
 
 app.listen(3000);
 console.log("attente de requete");
