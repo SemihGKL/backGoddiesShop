@@ -1,5 +1,5 @@
 // Importer la fonction de récupération de produits
-const { getProductsFromDatabase } = require('./productsFunctions');
+const { getProductsFromDatabase } = require('../productsFunctions');
 let products;
 
 beforeEach(async () => {

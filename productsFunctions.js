@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const dbConnect = require('./database/connection');
-const Products = require('./database/productModel');
+const Products = require('./database/models/productModel');
 
 
 // Fonction pour récupérer les produits depuis la base de données
