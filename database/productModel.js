@@ -1,4 +1,4 @@
-const { Double } = require("mongodb");
+const { Double, Decimal128 } = require("mongodb");
 const mongoose = require("mongoose");
 
 //pour les tests faire en sorte qu'il fait plus de 320 et moins de 6
@@ -21,7 +21,7 @@ const ProductSchema = new mongoose.Schema({
         type: String
     },
     price: {
-        type: Double
+        type: String
     },
     category: {
         type: String
