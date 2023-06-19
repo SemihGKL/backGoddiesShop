@@ -40,7 +40,7 @@ app.post('/new_user', (req, res) => {
       .catch((error) => {
         res.status(500).json({ error: 'Error when creating user account.' });
       });
-  });
+});
   
 
 app.listen(3000);
