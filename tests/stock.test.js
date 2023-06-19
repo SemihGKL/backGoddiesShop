@@ -1,5 +1,5 @@
 
-const {ajouterAuStock,getStock} = require('../stockFunctions'); // Importer la fonction à tester
+const {ajouterAuStock,getStock} = require('../stockFunctions');
 let StockInitial;
 beforeEach(async () => {
     StockInitial = await getStock('Produit A');
@@ -49,10 +49,8 @@ describe('Tests pour modifier la quantité de stock', () => {
 });
 describe('Tests avec valeur rejetée', () => {
 test('Vérification de la protection contre les injections', async () => {
-    // Préparation du test
     const quantiteAjoutee = "1'; db.product.deleteMany({}); db.product.insertOne({name: 'ProduitInjecte', quantity: 100}); db.product.find({name: 'ProduitInjecte'}).count(); //";
 
-    // Exécution de la méthode
     let error;
     try {
         await ajouterAuStock(StockInitial.name, quantiteAjoutee, true);

@@ -11,7 +11,10 @@ const ProductSchema = new mongoose.Schema({
     status: {
         type: String
     },
-    quantity: {
+    quantityReel: {
+        type: Number
+    },
+    quantityReserve: {
         type: Number
     },
     description: {

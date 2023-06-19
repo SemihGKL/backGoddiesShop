@@ -9,9 +9,9 @@ app.use(bodyParser.json());
 const dbConnect = require("./database/connection");
 
 // Import data models
-const Users = require('./database/userModel');
-const Products = require('./database/productModel');
-const Invoices = require('./database/invoiceModel');
+const Users = require('./database/models/userModel');
+const Products = require('./database/models/productModel');
+const Invoices = require('./database/models/invoiceModel');
 
 // execute database connection 
 dbConnect();
