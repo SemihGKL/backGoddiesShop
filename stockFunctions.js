@@ -1,30 +1,10 @@
-
-const { MongoClient } = require('mongodb');
-
-// Méthode pour se connecter à MongoDB
-// async function connectToMongoDB() {
-//     const url = 'mongodb+srv://gokolsemih:4dCJJLHJBeTPcO1p@cluster0.jhfdk8e.mongodb.net/?retryWrites=true&w=majority';
-//     const client = new MongoClient(url);
-
-//     try {
-//         await client.connect();
-//         console.log('Connecté à MongoDB');
-//         return client.db('Local_test');
-//     } catch (error) {
-//         console.error('Erreur de connexion à MongoDB', error);
-//         throw error;
-//     }
-// }
-
-const dbConnect = require("./database/connection");
-const Products = require('./database/productModel');
-
+const dbConnect = require("./database/connection")
+const Products = require("./database/models/productModel")
 
 //Méthode pour récuperer le stock d'un produit
 async function getStock(nomProduit) {
     try {
-        const db = await dbConnect();
-        // const collection = db.collection('Products');
+        await dbConnect();
 
         const filter = { name: nomProduit };
         const stock = await Products.findOne(filter);
@@ -38,48 +18,58 @@ async function getStock(nomProduit) {
         throw error;
     }
 }
-
-
-// Méthode pour ajouter du stock
-async function ajouterAuStock(nomProduit, quantiteAjoutee) {
+async function ajouterAuStock(nomProduit, quantiteAjoutee, reelOrReserve) {
     try {
         if (typeof quantiteAjoutee !== 'number' || isNaN(quantiteAjoutee)) {
             throw new Error('La quantité ajoutée doit être un nombre');
         }
-        const db = await connectToMongoDB();
-        const collection = db.collection('Products');
 
-        const filter = { name: { $eq: nomProduit } };
-        const produitInitial = await collection.findOne(filter);
+        const filter = { name: nomProduit };
+        const produitInitial = await Products.findOne(filter);
 
         if (!produitInitial) {
             throw new Error('Produit introuvable');
         }
 
-        let nouveauStockReel;
-        if (quantiteAjoutee >= 0) {
-            nouveauStockReel = produitInitial.quantity + quantiteAjoutee;
+        let nouveauStockReel = produitInitial.quantityReel;
+        let nouveauStockReserve = produitInitial.quantityReserve;
+
+        if (!reelOrReserve) {
+            if (quantiteAjoutee >= 0) {
+                nouveauStockReserve += quantiteAjoutee;
+            } else {
+                nouveauStockReserve -= Math.abs(quantiteAjoutee);
+            }
         } else {
-            nouveauStockReel = produitInitial.quantity - Math.abs(quantiteAjoutee);
+            if (quantiteAjoutee >= 0) {
+                nouveauStockReel += quantiteAjoutee;
+            } else {
+                nouveauStockReel -= Math.abs(quantiteAjoutee);
+            }
         }
 
-        const updateFilter = { name: { $eq: nomProduit } };
-        const update = {
-            $set: {
-                quantity: nouveauStockReel,
-            },
-        };
+        const updateFilter = { name: nomProduit };
+        const update = {};
 
-        await collection.updateOne(updateFilter, update);
-        const updatedProduit = await collection.findOne(filter);
-        return updatedProduit.quantity; // Retourne la quantité du produit modifié
+        if (!reelOrReserve) {
+            update.$set = { quantityReserve: nouveauStockReserve };
+        } else {
+            update.$set = { quantityReel: nouveauStockReel };
+        }
+
+        await Products.updateOne(updateFilter, update);
+        const updatedProduit = await Products.findOne(filter);
+
+        if (!reelOrReserve) {
+            return updatedProduit.quantityReserve;
+        } else {
+            return updatedProduit.quantityReel;
+        }
     } catch (error) {
         console.error('Erreur lors de l\'ajout au stock', error);
         throw error;
     }
 }
-
-
 
 module.exports = {
     ajouterAuStock,
