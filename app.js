@@ -1,16 +1,17 @@
 const express = require('express')
 const app = express();
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 app.use(bodyParser.json());
-
+app.use(cors());
 
 // require database connection 
 const dbConnect = require("./database/connection");
 
 // Import data models
 const Users = require('./database/models/userModel');
-const Products = require('./database/models/productModel');
+const { getProductsFromDatabase } = require('./productsFunctions');
 const Invoices = require('./database/models/invoiceModel');
 
 // execute database connection 
@@ -40,8 +41,17 @@ app.post('/new_user', (req, res) => {
       .catch((error) => {
         res.status(500).json({ error: 'Error when creating user account.' });
       });
-});
-  
+  });
+
+app.get('/products', async (req, res) => {
+    try {
+        const products = await getProductsFromDatabase();
+        res.json(products);
+    } catch (error) {
+        console.error('Erreur lors de la récupération des produits :', error);
+        res.status(500).json({ error: 'Erreur lors de la récupération des produits' });
+    }
+});  
 
 app.listen(3000);
 console.log("attente de requete");
