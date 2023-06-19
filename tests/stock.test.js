@@ -1,6 +1,6 @@
 
-const { ajouterAuStock } = require('./stockFunctions'); // Importer la fonction à tester
-const {getStock} = require('./stockFunctions');
+const { ajouterAuStock } = require('../stockFunctions'); // Importer la fonction à tester
+const {getStock} = require('../stockFunctions');
 let StockInitial;
 
 beforeEach(async () => {
