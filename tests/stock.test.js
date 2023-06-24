@@ -2,7 +2,7 @@
 const {ajouterAuStock,getStock} = require('../controllers/stockController');
 let StockInitial;
 beforeEach(async () => {
-    StockInitial = await getStock('Produit A');
+    StockInitial = await getStock('ProduitA');
 });
 
 describe('Tests pour modifier la quantité de stock', () => {
@@ -44,6 +44,15 @@ describe('Tests pour modifier la quantité de stock', () => {
 
         expect(stockModifie).toEqual(quantiteInitial + quantiteAjoutee);
     });
+
+    test('Quantité reservé inférieur a quantité réelle', async () => {
+        const quantiteReserve = StockInitial.quantityReel +1;
+        try {
+            await ajouterAuStock(StockInitial.name, quantiteReserve, false);
+        } catch (error) {
+            expect(error).toBeDefined();
+        }
+    })
 
 
 });
