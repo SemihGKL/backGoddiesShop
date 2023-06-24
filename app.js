@@ -6,7 +6,7 @@ const cors = require('cors');
 app.use(bodyParser.json());
 app.use(cors());
 
-// require database connection
+const userRoutes = require('./routes/userRoutes')
 const dbConnect = require("./database/connection");
 const { getStock, ajouterAuStock } = require("./controllers/stockController");
 // Import data models
@@ -14,35 +14,16 @@ const Users = require('./database/models/userModel');
 const { getProductsFromDatabase } = require('./productsFunctions');
 const Invoices = require('./database/models/invoiceModel');
 
+app.use(express.json());
+app.use(bodyParser.json());
+
 // execute database connection
 dbConnect();
 
-// app.get('/new_user', (req, res) => {
-//     console.log("test account page");
-// })
+// Routes des utilisateurs
+app.use('/users', userRoutes);
 
 //API Routes
-app.post('/new_user', (req, res) => {
-    console.log('ok newUser')
-    console.log(req.body);
-    const newUser = new Users({
-        lastName: req.body.lastName,
-        firstName: req.body.firstName,
-        email: req.body.email,
-        pwd: req.body.pwd,
-        address: req.body.address,
-        phone: req.body.phone
-    });
-
-    newUser.save()
-      .then(() => {
-        res.status(201).json({ message: 'Account creation success.' });
-      })
-      .catch((error) => {
-        res.status(500).json({ error: 'Error when creating user account.' });
-      });
-  });
-
 app.get('/products', async (req, res) => {
     try {
         const products = await getProductsFromDatabase();
