@@ -8,7 +8,6 @@ async function getStock(nomProduit) {
 
         const filter = { name: nomProduit };
         const stock = await Products.findOne(filter);
-
         if (!stock) {
             throw new Error('Stock introuvable');
         }
@@ -35,6 +34,10 @@ async function ajouterAuStock(nomProduit, quantiteAjoutee, reelOrReserve) {
         let nouveauStockReserve = produitInitial.quantityReserve;
 
         if (!reelOrReserve) {
+            if (nouveauStockReserve>nouveauStockReel)
+            {
+                throw new Error('Le stock réservé ne peut pas être supérieur au stock réel');
+            }
             if (quantiteAjoutee >= 0) {
                 nouveauStockReserve += quantiteAjoutee;
             } else {
