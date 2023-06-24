@@ -115,7 +115,7 @@ describe('Création d\'un utilisateur', () => {
       email: 'johazene@example.com',
       pwd: 'pwd123',
       address: '456 Avenue',
-      phone: 9876543210,
+      phone: "0706050403",
     };
 
     let error = null;
@@ -132,7 +132,7 @@ describe('Création d\'un utilisateur', () => {
     expect(error).toBeDefined();
   });
 
-  test.only('Échoue si le numéro de téléphone n\'est pas valide', async () => {
+  test('Échoue si le numéro de téléphone n\'est pas valide', async () => {
 
     // Créer un nouvel utilisateur avec un numéro non compatible
     const newUser = {

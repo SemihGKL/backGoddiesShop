@@ -1,34 +1,54 @@
 // Importer la fonction de récupération de produits
-const { getProductsFromDatabase } = require('../database/products');
+const { getProductsFromDatabase } = require('../productsFunctions');
+let products;
 
-// Test de la fonction getProductsFromDatabase
-describe('getProductsFromDatabase', () => {
- 
-  beforeAll(() => {
-    // connexion à la bdd
-  });
+beforeEach(async () => {
+  products = await getProductsFromDatabase();
+});
 
-  // Vérifier si les produits sont récupérés correctement depuis la BDD
-  test('Récupère tous les produits depuis la BDD', () => {
-    const products = getProductsFromDatabase();
-
-    // Vérifier si la fonction retourne un tableau
-    expect(Array.isArray(products)).toBe(true);
-
+// Test pour vérifier si des produits sont récupérés depuis la BDD
+describe('Checkproductsfromdatabase', () => {
+  test('Récupère des produits depuis la BDD', async () => {
     // Vérifier si le tableau contient des produits
     expect(products.length).toBeGreaterThan(0);
+  });
 
+
+// Test pour vérifier les propriétés des produits
+  test('Vérifie les propriétés des produits', () => {
     // Vérifier si chaque produit a les propriétés attendues
     products.forEach((product) => {
-      expect(product).toHaveProperty('id');
-      expect(product).toHaveProperty('name');
-      expect(product).toHaveProperty('price');
-      // + autres propriétés
+      expect(product.name).toBeDefined();
+      expect(product.status).toBeDefined();
+      expect(product.quantityReel).toBeDefined();
+      expect(product.quantityReserve).toBeDefined();
+      expect(product.description).toBeDefined();
+      expect(product.picture).toBeDefined();
+      expect(product.price).toBeDefined();
+      expect(product.category).toBeDefined();
     });
   });
 
-  // Fermer la connexion à la base de données après les tests
-  afterAll(() => {
-    // close database
+// Test pour vérifier si les produits ont des quantités valides
+
+  test('Vérifie la validité des quantités des produits', () => {
+    products.forEach((product) => {
+      const quantityReel = parseInt(product.quantityReel);
+      const quantityReserve = parseInt(product.quantityReserve);
+      expect(quantityReel).toBeGreaterThanOrEqual(0); // Vérifier si la quantité réelle est supérieure ou égale à 0
+      expect(quantityReserve).toBeGreaterThanOrEqual(0); // Vérifier si la quantité réservée est supérieure ou égale à 0
+      expect(quantityReel).toBeGreaterThanOrEqual(quantityReserve); // Vérifier si la quantité réelle est supérieure ou égale à la quantité réservée
+    });
   });
+
+// Test pour vérifier si les produits ont des prix valides
+  test('Vérifie la validité des prix des produits', () => {
+    products.forEach((product) => {
+      const price = parseInt(product.price);
+      expect(price).toBeGreaterThan(0); // Vérifier si le prix est supérieur à 0
+      expect(price).not.toBeNaN(); // Vérifier si le prix est un nombre valide
+    });
+  });
+
+
 });
