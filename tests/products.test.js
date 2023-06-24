@@ -1,5 +1,5 @@
 // Importer la fonction de récupération de produits
-const { getProductsFromDatabase } = require('./database');
+const { getProductsFromDatabase } = require('../database/products');
 
 // Test de la fonction getProductsFromDatabase
 describe('getProductsFromDatabase', () => {

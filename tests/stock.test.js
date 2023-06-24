@@ -1,6 +1,6 @@
 
-const { ajouterAuStock } = require('./stockFunctions'); // Importer la fonction à tester
-const {getStock} = require('./stockFunctions');
+const { ajouterAuStock } = require('../stockFunctions'); // Importer la fonction à tester
+const {getStock} = require('../stockFunctions');
 let StockInitial;
 
 beforeEach(async () => {
@@ -60,4 +60,3 @@ test('Vérification de la protection contre les injections', async () => {
     // Vérification de l'erreur
     expect(error).toBeDefined();
 });
-

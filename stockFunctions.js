@@ -1,30 +1,10 @@
-
-const { MongoClient } = require('mongodb');
-
-// Méthode pour se connecter à MongoDB
-// async function connectToMongoDB() {
-//     const url = 'mongodb+srv://gokolsemih:4dCJJLHJBeTPcO1p@cluster0.jhfdk8e.mongodb.net/?retryWrites=true&w=majority';
-//     const client = new MongoClient(url);
-
-//     try {
-//         await client.connect();
-//         console.log('Connecté à MongoDB');
-//         return client.db('Local_test');
-//     } catch (error) {
-//         console.error('Erreur de connexion à MongoDB', error);
-//         throw error;
-//     }
-// }
-
 const dbConnect = require("./database/connection");
-const Products = require('./database/productModel');
-
+const Products = require('./database/models/productModel');
 
 //Méthode pour récuperer le stock d'un produit
 async function getStock(nomProduit) {
     try {
-        const db = await dbConnect();
-        // const collection = db.collection('Products');
+        await dbConnect();
 
         const filter = { name: nomProduit };
         const stock = await Products.findOne(filter);
