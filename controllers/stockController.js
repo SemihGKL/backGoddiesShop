@@ -33,46 +33,43 @@ async function ajouterAuStock(nomProduit, quantiteAjoutee, reelOrReserve) {
         let nouveauStockReel = produitInitial.quantityReel;
         let nouveauStockReserve = produitInitial.quantityReserve;
 
-        if (!reelOrReserve) {
-            if (nouveauStockReserve>nouveauStockReel)
-            {
-                throw new Error('Le stock réservé ne peut pas être supérieur au stock réel');
-            }
-            if (quantiteAjoutee >= 0) {
-                nouveauStockReserve += quantiteAjoutee;
-            } else {
-                nouveauStockReserve -= Math.abs(quantiteAjoutee);
-            }
-        } else {
+        if (reelOrReserve) {
             if (quantiteAjoutee >= 0) {
                 nouveauStockReel += quantiteAjoutee;
             } else {
                 nouveauStockReel -= Math.abs(quantiteAjoutee);
+            }
+        } else {
+            if (quantiteAjoutee >= 0) {
+                nouveauStockReserve += quantiteAjoutee;
+            } else {
+                nouveauStockReserve -= Math.abs(quantiteAjoutee);
             }
         }
 
         const updateFilter = { name: nomProduit };
         const update = {};
 
-        if (!reelOrReserve) {
-            update.$set = { quantityReserve: nouveauStockReserve };
-        } else {
+        if (reelOrReserve) {
             update.$set = { quantityReel: nouveauStockReel };
+        } else {
+            update.$set = { quantityReserve: nouveauStockReserve };
         }
 
         await Products.updateOne(updateFilter, update);
         const updatedProduit = await Products.findOne(filter);
 
-        if (!reelOrReserve) {
-            return updatedProduit.quantityReserve;
-        } else {
+        if (reelOrReserve) {
             return updatedProduit.quantityReel;
+        } else {
+            return updatedProduit.quantityReserve;
         }
     } catch (error) {
         console.error('Erreur lors de l\'ajout au stock', error);
         throw error;
     }
 }
+
 
 module.exports = {
     ajouterAuStock,

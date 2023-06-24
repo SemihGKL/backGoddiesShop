@@ -67,12 +67,13 @@ app.get('/stock/:nomProduit', async (req, res) => {
 app.post('/stock/ajouter', async (req, res) => {
     const { nomProduit, quantiteAjoutee, reelOrReserve } = req.body;
     try {
-        const stockModifie = await ajouterAuStock(nomProduit, quantiteAjoutee, reelOrReserve);
+        const stockModifie = await ajouterAuStock(nomProduit, quantiteAjoutee, reelOrReserve === 'reel');
         res.json({ stockModifie });
     } catch (error) {
         res.status(500).json({ error: 'Erreur lors de l\'ajout au stock' });
     }
-})
+});
+
 
 app.listen(3000);
 console.log("attente de requete");
