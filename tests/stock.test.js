@@ -17,7 +17,6 @@ describe('Tests pour modifier la quantité de stock', () => {
         const quantiteAjoutee = 7;
         const quantiteInitial = StockInitial.quantityReserve;
         const stockModifie = await ajouterAuStock(StockInitial.name, quantiteAjoutee, false);
-        console.log(StockInitial)
         expect(stockModifie).toBe(quantiteInitial + quantiteAjoutee);
     });
 

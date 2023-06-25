@@ -21,7 +21,7 @@ const ProductSchema = new mongoose.Schema({
         type: String
     },
     picture: {
-        type: String
+        data: Buffer
     },
     price: {
         type: String
