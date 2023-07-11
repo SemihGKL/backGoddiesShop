@@ -66,7 +66,6 @@ test('Vérification de la protection contre les injections', async () => {
         error = err;
     }
 
-    // Vérification de l'erreur
     expect(error).toBeDefined();
 });
 
